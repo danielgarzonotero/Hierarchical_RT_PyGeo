@@ -40,7 +40,7 @@ class GCN_Geo(torch.nn.Module):
                                 aggr='add')
         self.dropout_3 = nn.Dropout(p=p3)
         
-        self.nn_gat_1 = ARMAConv(hidden_dim_nn_3, hidden_dim_gat_0, num_stacks = 3, dropout=0.1, num_layers=3, shared_weights = True ) #TODO
+        self.nn_gat_1 = ARMAConv(hidden_dim_nn_3, hidden_dim_gat_0, num_stacks = 3, dropout=0.1, num_layers=7, shared_weights = False ) #TODO
         
         
         self.readout = aggr.SumAggregation()
