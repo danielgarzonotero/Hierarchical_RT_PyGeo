@@ -31,6 +31,7 @@ Gussakovsky, D.; Neustaeter, H.; Spicer, V.; Krokhin, O. V. Sequence-Specific Mo
 Spicer, V.; Krokhin, O. V. Peptide Retention Time Prediction in Hydrophilic Interaction Liquid Chromatography. Comparison of Separation Selectivity between Bare Silica and Bonded Stationary Phases. J. Chromatogr. A 2018, 1534, 75– 84, DOI: 10.1016/j.chroma.2017.12.046
 
 All dataset from:
+
 Ma, C.; Ren, Y.; Yang, J.; Ren, Z.; Yang, H.; Liu, S. Improved Peptide Retention Time Prediction in Liquid Chromatography thr ough Deep Learning. Anal. Chem. 2018, 90 (18), 10881–10888.
 https://doi.org/10.1021/acs.analchem.8b02386.
 
