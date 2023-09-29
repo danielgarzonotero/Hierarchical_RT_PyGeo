@@ -56,7 +56,7 @@ def smiles2geodata(sequence, y, node_features_dict, edge_features_dict):
 
 
 def peptide_to_helm(peptide, polymer_id):
-    sequence = peptide.replace("(ac)", "[ac].").replace("_", "")
+    sequence = peptide.replace("(ac)", "[ac].").replace("_", "").replace("1", "").replace("2", "").replace("3", "").replace("4", "")
     sequence_helm = "".join(sequence)
     
     sequence_helm = ''.join([c + '.' if c.isupper() else c for i, c in enumerate(sequence_helm)])

@@ -136,13 +136,13 @@ rmse_validation = mean_squared_error(target_all_test.cpu(), pred_prob_all_test.c
 r_validation, _ = pearsonr(target_all_test.cpu(), pred_prob_all_test.cpu())
 
 
-dataset_path = "data/dia.csv"
+dataset_path = "data/unmod.csv"
 df = pd.read_csv(dataset_path)
 RT_values = df.iloc[:, 1]  
 #Plots
 #Distribution Dataset
 plt.hist(RT_values, bins=10)  
-plt.title("RT Distribution")
+plt.title("RT Distribution-unmod.txt")
 plt.xlabel("RT Values (sec)")
 plt.ylabel("Frequency")
 plt.show()

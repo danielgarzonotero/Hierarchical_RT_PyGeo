@@ -7,7 +7,7 @@ from torch_geometric.data import InMemoryDataset
 from src.utils import smiles2geodata, get_atom_features
 
 class GeoDataset(InMemoryDataset):
-    def __init__(self, root='../data', raw_name='dia_reduced_10000.csv', processed_name='rt_processed.pt', transform=None, pre_transform=None):
+    def __init__(self, root='../data', raw_name='RT_dataset_shuffle_reduced_30000.csv', processed_name='rt_processed.pt', transform=None, pre_transform=None):
         self.filename = os.path.join(root, raw_name)
         
         self.df = pd.read_csv(self.filename)
