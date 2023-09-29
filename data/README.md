@@ -17,6 +17,7 @@ Atlantis Silica	ATLANTIS_SILICA.txt	Spicer et al.
 Luna Silica	LUNA_SILICA.txt	Spicer et al.
 
 Copyright
+
 The copyrights of these data belong to their authors:
 
 Nagaraj, N.; Kulak, N. A.; Cox, J.; Neuhauser, N.; Mayr, K.; Hoerning, O.; Vorm, O.; Mann, M. System-Wide Perturbation Analysis with Nearly Complete Coverage of the Yeast Proteome by Single-Shot Ultra HPLC Runs on a Bench Top Orbitrap. Mol. Cell. Proteomics 2012, 11 (3), M111.013722 DOI: 10.1074/mcp.M111.013722
