@@ -1,22 +1,22 @@
-dataset	file name	reference
+# Dataset:	file name -	reference
 
-HeLa	mod.txt	Sharma et al.
+HeLa:	mod.csv	- Sharma et al.
 
-Yeast	unmod.txt	Nagaraj et al.
+Yeast:	unmod.csv	- Nagaraj et al.
 
-Misc	dia.txt	Rosenberger et al.
+Misc:	dia.csv -	Rosenberger et al.
 
-SCX	SCX.txt	Gussakovsky et al.
+SCX:	SCX.csv	- Gussakovsky et al.
 
-Luna HILIC	LUNA_HILIC.txt	Spicer et al.
+Luna HILIC:	LUNA_HILIC.csv - Spicer et al.
 
-Xbridge Amide	LUNA_SILICA.txt	Spicer et al.
+Xbridge Amide:	LUNA_SILICA.csv	- Spicer et al.
 
-Atlantis Silica	ATLANTIS_SILICA.txt	Spicer et al.
+Atlantis Silica: ATLANTIS_SILICA.csv - Spicer et al.
 
-Luna Silica	LUNA_SILICA.txt	Spicer et al.
+Luna Silica:	LUNA_SILICA.csv	- Spicer et al.
 
-Copyright
+# Copyright
 
 The copyrights of these data belong to their authors:
 
