@@ -3,7 +3,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch_geometric.nn import  GATConv, NNConv, GCNConv, ChebConv, SAGEConv, ResGatedGraphConv, TAGConv, SGConv, MFConv, HypergraphConv, ClusterGCNConv, FiLMConv, EGConv, GeneralConv, ARMAConv
+from torch_geometric.nn import NNConv, ARMAConv
 from torch_geometric.nn import aggr
 from torch_scatter import scatter
 from src.data import GeoDataset
