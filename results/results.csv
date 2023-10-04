@@ -1,15 +1,15 @@
 Metric,Value
 number_features,15.0
-num_edge_features,8.0
+num_edge_features,7.0
 initial_dim_gcn ,15.0
-edge_dim_feature,8.0
+edge_dim_feature,7.0
 hidden_dim_nn_1 ,500.0
 p1 ,0.0
 hidden_dim_nn_2 ,250.0
 p2 ,0.0
 hidden_dim_nn_3 ,100.0
 p3 ,0.0
-hidden_dim_gat_0,20.0
+hidden_dim_gat_0,10.0
 hidden_dim_gat_1,0.0
 hidden_dim_fcn_1 ,100.0
 hidden_dim_fcn_2 ,50.0
@@ -18,15 +18,15 @@ training_test_percentage %,80.0
 batch_size,25.0
 learning_rate,0.001
 number_of_epochs,100.0
-r2_train,0.3345618186687638
-r_train,0.5869272672775617
-mae_train,1689.6113409061854
-rmse_train,2370.150232389698
-r2_validation,0.26999844608642076
-r_validation,0.5221063602313167
-mae_validation,1736.9409916771967
-rmse_validation,2465.050333383452
+r2_train,0.9876844186844503
+r_train,0.9940957420174354
+mae_train,0.46542707747936246
+rmse_train,0.6028770672625168
+r2_validation,0.978978813178521
+r_validation,0.9895974558804074
+mae_validation,0.5962254399490358
+rmse_validation,0.7943125936864052
 time_preprocessing,0.0
-time_training,182.6388780315717
-time_prediction,0.894427490234375
-total_time,183.5443294564883
+time_training,58.873050808906555
+time_prediction,0.31034263769785564
+total_time,59.18408700625102

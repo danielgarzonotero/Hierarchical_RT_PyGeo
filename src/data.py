@@ -8,7 +8,7 @@ from src.utils import sequences_geodata, get_atom_features
 from src.device import device_info
 
 class GeoDataset(InMemoryDataset):
-    def __init__(self, root='../data', raw_name='Xbridge.csv', processed_name='rt_processed.pt', transform=None, pre_transform=None):
+    def __init__(self, root='../data', raw_name='10000_ATLANTIS_SILICA.csv', processed_name='rt_processed.pt', transform=None, pre_transform=None):
         self.filename = os.path.join(root, raw_name)
         
         self.df = pd.read_csv(self.filename)
@@ -60,5 +60,10 @@ class GeoDataset(InMemoryDataset):
         data, slices = self.collate(data_list)
         torch.save((data, slices), self.processed_paths[0])
         
-        return aminoacids_features_dict 
+        aminoacids_features_dict_file = '/home/vvd9fd/Documents/Bilodeau Group/Codes/0.Research/Hierarchical_RT_PyGeo/data/aminoacids_features_dict.pt'
+        torch.save(aminoacids_features_dict, aminoacids_features_dict_file)
+        
+        return aminoacids_features_dict
+
+     
 

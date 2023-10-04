@@ -63,7 +63,7 @@ p2 = 0
 hidden_dim_nn_3 = 100
 p3 = 0
 
-hidden_dim_gat_0 = 20
+hidden_dim_gat_0 = 10
 hidden_dim_gat_1 = 0
 
 hidden_dim_fcn_1 = 100

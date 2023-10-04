@@ -105,7 +105,7 @@ def get_atom_features(sequence_list):
         #charge
         charge_amino = float(Chem.GetFormalCharge(amino_mol)) 
         #number of atoms
-        atoms_amino = float(amino_mol.GetNumAtoms())
+        atoms_amino = float(amino_mol.GetNumAtoms()) #TODO CHECK BIOPYTHON, CHECK WITH RACHEL
         
         #all together
         properties = [wt_amino, logp_amino, charge_amino, atoms_amino]

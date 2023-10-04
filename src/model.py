@@ -11,7 +11,7 @@ from src.device import device_info
 
 
 dataset = GeoDataset(root='data')
-aminoacids_features_dict = dataset.process()
+aminoacids_features_dict = torch.load('/home/vvd9fd/Documents/Bilodeau Group/Codes/0.Research/Hierarchical_RT_PyGeo/data/aminoacids_features_dict.pt')
 class GCN_Geo(torch.nn.Module):
     def __init__(self,
                 initial_dim_gcn,
@@ -45,7 +45,7 @@ class GCN_Geo(torch.nn.Module):
         self.dropout_3 = nn.Dropout(p=p3)
         
         #The 4 comes from the four amino acid features that were concatenated
-        self.nn_gat_1 = ARMAConv(hidden_dim_nn_3+4, hidden_dim_gat_0, num_stacks = 3, dropout=0.1, num_layers=7, shared_weights = False ) #TODO
+        self.nn_gat_1 = ARMAConv(hidden_dim_nn_3+4, hidden_dim_gat_0, num_stacks = 3, dropout=0, num_layers=7, shared_weights = False ) #TODO
         
         
         self.readout = aggr.SumAggregation()
