@@ -290,7 +290,7 @@ def get_label_aminoacid_atoms(edges_peptidic, edges_nonpeptidic, molecule):
 
 #To create aminoacid dictionary
 def split_sequence(peptide):
-    sequence = peptide.replace("(ac)", "[ac].").replace("_", "")
+    sequence = peptide.replace("(ac)", "[ac].").replace("_", "").replace("1", "").replace("2", "").replace("3", "").replace("4", "")
     sequence = "".join(sequence)
     
     sequence = ''.join([c + '.' if c.isupper() else c for i, c in enumerate(sequence)])
