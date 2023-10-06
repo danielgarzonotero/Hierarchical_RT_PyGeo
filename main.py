@@ -12,6 +12,7 @@ from src.model import GCN_Geo
 from src.process import train, validation, predict_test
 from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
 from scipy.stats import pearsonr
+from math import sqrt
 
 device_information = device_info()
 print(device_information)
@@ -122,18 +123,21 @@ input_all, target_all_train, pred_prob_all_train = predict_test(model, train_dat
 
 
 r2_train = r2_score(target_all_train.cpu(), pred_prob_all_train.cpu())
-mae_train = mean_absolute_error(target_all_train.cpu(), pred_prob_all_train.cpu())
-rmse_train = mean_squared_error(target_all_train.cpu(), pred_prob_all_train.cpu(), squared=False)
 r_train, _ = pearsonr(target_all_train.cpu(), pred_prob_all_train.cpu()) 
+mae_train = mean_absolute_error(target_all_train.cpu(), pred_prob_all_train.cpu())
+mse_train = mean_squared_error(target_all_train.cpu(), pred_prob_all_train.cpu(), squared=False)
+rmse_train = sqrt(mse_train)
 
 # Validation:
 input_all, target_all_test, pred_prob_all_test = predict_test(model, val_dataloader, device,weights_file)
 
 
 r2_validation = r2_score(target_all_test.cpu(), pred_prob_all_test.cpu())
-mae_validation = mean_absolute_error(target_all_test.cpu(), pred_prob_all_test.cpu())
-rmse_validation = mean_squared_error(target_all_test.cpu(), pred_prob_all_test.cpu(), squared=False)
 r_validation, _ = pearsonr(target_all_test.cpu(), pred_prob_all_test.cpu())
+mae_validation = mean_absolute_error(target_all_test.cpu(), pred_prob_all_test.cpu())
+mse_validation = mean_squared_error(target_all_test.cpu(), pred_prob_all_test.cpu(), squared=False)
+rmse_validation = sqrt(mse_validation)
+
 
 
 dataset_path = "data/unmod.csv"
@@ -164,8 +168,8 @@ plt.show()
 
 #Training
 
-legend_text = "R2 Score: {:.4f}\nR Pearson: {:.4f}\nMAE: {:.4f}\nRMSE: {:.4f}".format(
-    r2_train, r_train, mae_train, rmse_train
+legend_text = "R2 Score: {:.4f}\nR Pearson: {:.4f}\nMAE: {:.4f}\nMSE: {:.4f}\nRMSE: {:.4f}".format(
+    r2_train, r_train, mae_train, mse_train, rmse_train
 )
 
 plt.figure(figsize=(4, 4), dpi=100)
@@ -180,8 +184,8 @@ plt.savefig('results/training', format="jpg")
 plt.show()
 
 #Validation
-legend_text = "R2 Score: {:.4f}\nR Pearson: {:.4f}\nMAE: {:.4f}\nRMSE: {:.4f}".format(
-    r2_validation, r_validation, mae_validation, rmse_validation
+legend_text = "R2 Score: {:.4f}\nR Pearson: {:.4f}\nMAE: {:.4f}\nMSE: {:.4f}\nRMSE: {:.4f}".format(
+    r2_validation, r_validation, mae_validation, mse_validation, rmse_validation
 )
 
 plt.figure(figsize=(4, 4), dpi=100)
@@ -230,10 +234,12 @@ data = {
         "r2_train",
         "r_train",
         "mae_train",
+        "mse_train", 
         "rmse_train", 
         "r2_validation",
         "r_validation",
         "mae_validation",
+        "mse_validation",
         "rmse_validation",
         "time_preprocessing", 
         "time_training",
@@ -263,10 +269,12 @@ data = {
         r2_train, 
         r_train, 
         mae_train, 
+        mse_train,
         rmse_train,
         r2_validation,
         r_validation,
         mae_validation, 
+        mse_validation,
         rmse_validation,
         time_preprocessing, 
         time_training,
@@ -279,4 +287,6 @@ data = {
 df = pd.DataFrame(data)
 df.to_csv('results/results.csv', index=False)
 
- # %%
+
+
+# %%
