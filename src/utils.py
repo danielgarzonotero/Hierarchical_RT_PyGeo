@@ -10,10 +10,11 @@ from rdkit.Chem.Draw import rdMolDraw2D
 from IPython.display import SVG
 
 from sklearn.preprocessing import OneHotEncoder
+from Bio.SeqUtils.ProtParam import ProteinAnalysis
+from Bio.SeqUtils import MeltingTemp as mt
 
 
-
-def sequences_geodata(cc, sequence, y, node_features_dict, edge_features_dict,amino_features_dict, device):
+def sequences_geodata(cc, sequence, y, peptide_ft_dict, amino_ft_dict, node_ft_dict, edge_ft_dict, device):
     
     #Atoms
     polymer_id = "PEPTIDE1" 
@@ -38,8 +39,8 @@ def sequences_geodata(cc, sequence, y, node_features_dict, edge_features_dict,am
         
         edge_key_features.append(f"{bond_type:.1f}_{in_ring:.1f}_{conjugated:.1f}") 
     
-    nodes_features = torch.tensor(np.array([node_features_dict[x] for x in node_keys_features]), dtype=torch.float32)
-    edges_features = torch.tensor(np.array([edge_features_dict[x] for x in edge_key_features]), dtype=torch.float32)  
+    nodes_features = torch.tensor(np.array([node_ft_dict[x] for x in node_keys_features]), dtype=torch.float32)
+    edges_features = torch.tensor(np.array([edge_ft_dict[x] for x in edge_key_features]), dtype=torch.float32)  
     graph_edges = get_edge_indices(molecule)[0]
     
     edges_peptidic = get_edge_indices(molecule)[1]
@@ -49,10 +50,11 @@ def sequences_geodata(cc, sequence, y, node_features_dict, edge_features_dict,am
     labels_aminoacid_atoms = get_label_aminoacid_atoms(edges_peptidic, edges_nonpeptidic, molecule)
     
     #Aminoacid:
-    
     aminoacids =get_aminoacids(sequence)
-    aminoacids_features = torch.tensor(np.array([amino_features_dict[amino] for amino in aminoacids]), dtype=torch.float32, device=device)
+    aminoacids_features = torch.tensor(np.array([amino_ft_dict[amino] for amino in aminoacids]), dtype=torch.float32, device=device)
 
+    #Peptide:
+    peptide_features = torch.tensor(np.array([peptide_ft_dict[sequence]]), dtype=torch.float32, device=device)
 
     geo_dp = Data(x=nodes_features,
                   edge_index=graph_edges, 
@@ -61,7 +63,7 @@ def sequences_geodata(cc, sequence, y, node_features_dict, edge_features_dict,am
                   cc = cc,
                   y=y, )
     
-    return geo_dp, aminoacids_features
+    return geo_dp, aminoacids_features, peptide_features
 
 
 #Atomic Features
@@ -81,15 +83,48 @@ def peptide_to_helm(peptide, polymer_id):
 
     
 #Creating the dictionaries based on the dataset information
-def get_atom_features(sequence_list):
+
+def get_features(sequence_list):
+    
+    peptide_features_dict = defaultdict(list)
     peptides_list_helm = []
     aminoacid_list = []
     
     for i, peptide in enumerate(sequence_list):
+        peptide_biopython = ProteinAnalysis(peptide)
+        #molecular weight
+        wt_peptide = peptide_biopython.molecular_weight()
+        #aromaticity
+        aromaticity_peptide = peptide_biopython.aromaticity()
+        #hidrophobicity
+        hydrophobicity_peptide = peptide_biopython.gravy()
+        #Calculate the charge of a protein at given pH (pH 7)
+        net_charge_peptide = peptide_biopython.charge_at_pH(7)
+        # isoelectric_point
+        p_iso_peptide = peptide_biopython.isoelectric_point()
+        #inextability
+        inextability_peptide = peptide_biopython.instability_index()
+        #length Peptide
+        length_peptide = peptide_biopython.length
+    
+        peptide_properties = [wt_peptide, 
+                            aromaticity_peptide,
+                            hydrophobicity_peptide,
+                            net_charge_peptide,
+                            p_iso_peptide,
+                            inextability_peptide,
+                            length_peptide]
+        
+        peptide_ft = np.array(peptide_properties)
+        peptide_features_dict[peptide] = peptide_ft
+        
+        #To use Helm notation and RdKit for nodes and bonds features
         polymer_type = "PEPTIDE"  # Tipo de polímero (en este caso, PEPTIDE)
         polymer_id = f"{polymer_type}{i + 1}"
         simple_polymer_helm = peptide_to_helm(peptide, polymer_id)
-        peptides_list_helm.append(simple_polymer_helm)
+        peptides_list_helm.append(simple_polymer_helm) #create the list of peptides in Helm notation
+        
+        #To use for amino acids features
         aminoacid_list.extend(get_aminoacids(peptide))
         
     aminoacid_set = list(set(aminoacid_list))
@@ -97,19 +132,33 @@ def get_atom_features(sequence_list):
     
     for amino in aminoacid_set:
         amino_mol = get_molecule(amino)
+        amino_biopython = ProteinAnalysis(amino)
         
         #molecular weight:
         wt_amino = Descriptors.MolWt(amino_mol)
+        #aromaticity Calculate the aromaticity according to Lobry, 1994:
+        aromaticity_amino = amino_biopython.aromaticity()
+        #Calculate the GRAVY (Grand Average of Hydropathy) according to Kyte and Doolitle, 1982.
+        hydrophobicity_amino = amino_biopython.gravy()
+        #Calculate the charge of a protein at given pH (pH 7)
+        net_charge_amino = amino_biopython.charge_at_pH(7)
+        # isoelectric_point
+        p_iso_amino = amino_biopython.isoelectric_point()
         #coeficiente de partición octanol-agua. Un LogP más alto indica una molécula más hidrofóbica (menos polar), mientras que un LogP más bajo indica una molécula más hidrofílica (más polar).
         logp_amino = Crippen.MolLogP(amino_mol)
-        #charge
-        charge_amino = float(Chem.GetFormalCharge(amino_mol)) 
         #number of atoms
-        atoms_amino = float(amino_mol.GetNumAtoms()) #TODO CHECK BIOPYTHON, CHECK WITH RACHEL
+        atoms_amino = float(amino_mol.GetNumAtoms())
         
         #all together
-        properties = [wt_amino, logp_amino, charge_amino, atoms_amino]
-        amino_ft = np.array(properties)
+        amino_properties = [wt_amino,
+                            aromaticity_amino,
+                            hydrophobicity_amino,
+                            net_charge_amino,
+                            p_iso_amino,
+                            logp_amino, 
+                            atoms_amino]
+        
+        amino_ft = np.array(amino_properties)
         amino_features_dict[amino] = amino_ft
         
   
@@ -199,7 +248,7 @@ def get_atom_features(sequence_list):
         edge_features_dict[edge_key_features_combined] = feature_edge
         
     
-    return node_features_dict, edge_features_dict, amino_features_dict
+    return  peptide_features_dict, amino_features_dict, node_features_dict, edge_features_dict
 
 #Getting the edges to the molecule
 def get_edge_indices(molecule):
@@ -289,7 +338,7 @@ def get_label_aminoacid_atoms(edges_peptidic, edges_nonpeptidic, molecule):
 #Aminoacids Features
 
 #To create aminoacid dictionary
-def split_sequence(peptide):
+def split_sequence_for_Helm(peptide):
     sequence = peptide.replace("(ac)", "[ac].").replace("_", "").replace("1", "").replace("2", "").replace("3", "").replace("4", "")
     sequence = "".join(sequence)
     
@@ -328,7 +377,7 @@ def get_aminoacids(sequence):
     aminoacids_list = []
     
     for i, sequence in enumerate(sequence):
-        aminoacids_list.extend(split_sequence(sequence))
+        aminoacids_list.extend(split_sequence_for_Helm(sequence))
     
     return aminoacids_list
 
