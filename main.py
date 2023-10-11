@@ -32,7 +32,7 @@ time_preprocessing = (finish_time_preprocessing - finish_time_preprocessing) / 6
 
 
 # # Number of datapoints in the training set:
-training_test_percentage = 0.8
+training_test_percentage = 0.90
 n_train = int(len(dataset) * training_test_percentage)
 
 # # Number of datapoints in the validation set:
@@ -64,7 +64,7 @@ p2 = 0
 hidden_dim_nn_3 = 100
 p3 = 0
 
-hidden_dim_gat_0 = 10
+hidden_dim_gat_0 = 20
 hidden_dim_gat_1 = 0
 
 hidden_dim_fcn_1 = 100
