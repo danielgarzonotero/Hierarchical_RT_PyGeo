@@ -8,10 +8,15 @@ from torch_geometric.nn import aggr
 from torch_scatter import scatter
 from src.data import GeoDataset
 from src.device import device_info
-
+import os
 
 dataset = GeoDataset(root='data')
-aminoacids_features_dict = torch.load('/home/vvd9fd/Documents/Bilodeau Group/Codes/0.Research/Hierarchical_RT_PyGeo/data/aminoacids_features_dict.pt')
+
+# Load the dictionaries using the relative paths
+aminoacids_features_dict = torch.load('data/dictionaries/aminoacids_features_dict.pt')
+peptides_features_dict = torch.load('data/dictionaries/peptides_features_dict.pt')
+
+#Hierarchical Graph Neural Network
 class GCN_Geo(torch.nn.Module):
     def __init__(self,
                 initial_dim_gcn,
@@ -44,13 +49,14 @@ class GCN_Geo(torch.nn.Module):
                                 aggr='add')
         self.dropout_3 = nn.Dropout(p=p3)
         
-        #The 4 comes from the four amino acid features that were concatenated
-        self.nn_gat_1 = ARMAConv(hidden_dim_nn_3+4, hidden_dim_gat_0, num_stacks = 3, dropout=0, num_layers=7, shared_weights = False ) #TODO
+        #The 7 comes from the four amino acid features that were concatenated
+        self.nn_gat_1 = ARMAConv(hidden_dim_nn_3+7, hidden_dim_gat_0, num_stacks = 3, dropout=0, num_layers=7, shared_weights = False ) #TODO
         
         
         self.readout = aggr.SumAggregation()
         
-        self.linear1 = nn.Linear(hidden_dim_gat_0, hidden_dim_fcn_1)
+        #The 7 comes from the four peptide features that were concatenated
+        self.linear1 = nn.Linear(hidden_dim_gat_0+7, hidden_dim_fcn_1)
         self.linear2 = nn.Linear(hidden_dim_fcn_1, hidden_dim_fcn_2)
         self.linear3 = nn.Linear(hidden_dim_fcn_2, hidden_dim_fcn_3)
         self.linear4 = nn.Linear(hidden_dim_fcn_3, 1)
@@ -80,14 +86,25 @@ class GCN_Geo(torch.nn.Module):
             num_aminoacid = torch.max(monomer_labels_i).item()
             amino_index_i = get_amino_indices(num_aminoacid)
 
+            #getting amino acids representation from atom features
             xi = scatter(xi, monomer_labels_i, dim=0, reduce="sum")
             
+            #adding amino acids features
             aminoacids_features_i = aminoacids_features_dict[cc_i]
-            combined_ft = torch.cat((xi, aminoacids_features_i), dim=1)
+            xi = torch.cat((xi, aminoacids_features_i), dim=1)
             
-            xi = self.nn_gat_1(combined_ft, amino_index_i) 
+            #Graph convolution amino acid level
+            xi = self.nn_gat_1(xi, amino_index_i) 
             
+            #Readout for peptide representation
             xi = self.readout(xi)
+            
+            #adding peptides features
+            peptides_features_i = peptides_features_dict[cc_i]
+            xi = torch.cat((xi, peptides_features_i), dim=1)
+            
+            #TODO Should I apply graph convulution here? if yes, i have to create anothe edge index
+            
             results_list.append(xi)
             
         p = torch.cat(results_list, dim=0)
