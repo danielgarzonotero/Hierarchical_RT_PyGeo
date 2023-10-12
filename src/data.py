@@ -9,7 +9,7 @@ from src.device import device_info
 
 class GeoDataset(InMemoryDataset):
     def __init__(self, root='../data', raw_name='10000_unmod.csv', processed_name='rt_processed.pt', transform=None, pre_transform=None):
-        self.filename = os.path.join(root, raw_name)
+        self.filename = os.path.join(root, raw_name) #TODO processed name
         
         self.df = pd.read_csv(self.filename)
         self.x = self.df[self.df.columns[0]].values
@@ -62,24 +62,16 @@ class GeoDataset(InMemoryDataset):
         data, slices = self.collate(data_list)
         torch.save((data, slices), self.processed_paths[0])
         
-        # directorio del script de Python actual
-        script_directory = os.path.dirname(os.path.abspath(__file__ if "__file__" in locals() else sys.argv[0]))
-
-        # directorio relativo para los diccionarios
-        dictionaries_dir = os.path.join(script_directory, 'data/dictionaries')
-
-        # crea el directorio 
-        os.makedirs(dictionaries_dir, exist_ok=True)
+        # Ruta completa al directorio que deseas crear
+        dictionaries_path = 'data/dictionaries'
 
         # rutas relativas para los diccionarios
-        aminoacids_features_dict_path = os.path.join(dictionaries_dir, 'aminoacids_features_dict.pt')
-        peptides_features_dict_path = os.path.join(dictionaries_dir, 'peptides_features_dict.pt')
+        aminoacids_features_dict_path = os.path.join(dictionaries_path, 'aminoacids_features_dict.pt')
+        peptides_features_dict_path = os.path.join(dictionaries_path, 'peptides_features_dict.pt')
 
         # Guarda los diccionarios 
         torch.save(aminoacids_features_dict, aminoacids_features_dict_path)
         torch.save(peptides_features_dict, peptides_features_dict_path)
-                
-        
 
      
 
