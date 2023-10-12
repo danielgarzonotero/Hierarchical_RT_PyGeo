@@ -6,12 +6,10 @@ from torch_geometric.data import Data
 
 from rdkit import Chem
 from rdkit.Chem import Crippen, Descriptors
-from rdkit.Chem.Draw import rdMolDraw2D
-from IPython.display import SVG
 
 from sklearn.preprocessing import OneHotEncoder
 from Bio.SeqUtils.ProtParam import ProteinAnalysis
-from Bio.SeqUtils import MeltingTemp as mt
+
 
 
 def sequences_geodata(cc, sequence, y, peptide_ft_dict, amino_ft_dict, node_ft_dict, edge_ft_dict, device):
@@ -36,8 +34,11 @@ def sequences_geodata(cc, sequence, y, peptide_ft_dict, amino_ft_dict, node_ft_d
         bond_type = bond.GetBondTypeAsDouble()
         in_ring = int(bond.IsInRing())
         conjugated = int(bond.GetIsConjugated())
+        bond_aromatic = int(bond.GetIsAromatic())
+        valence_contribution_i = int(bond.GetValenceContrib(bond.GetBeginAtom()))
+        valence_contribution_f = int(bond.GetValenceContrib(bond.GetEndAtom()))
         
-        edge_key_features.append(f"{bond_type:.1f}_{in_ring:.1f}_{conjugated:.1f}") 
+        edge_key_features.append(f"{bond_type:.1f}_{in_ring:.1f}_{conjugated:.1f}_{bond_aromatic:.1f}_{valence_contribution_i:.1f}_{valence_contribution_f:.1f}") 
     
     nodes_features = torch.tensor(np.array([node_ft_dict[x] for x in node_keys_features]), dtype=torch.float32)
     edges_features = torch.tensor(np.array([edge_ft_dict[x] for x in edge_key_features]), dtype=torch.float32)  
@@ -173,6 +174,9 @@ def get_features(sequence_list):
     bond_type = []
     in_ring = []
     conjugated = []
+    bond_aromatic =[]
+    valence_contribution_i = []
+    valence_contribution_f = []
     
     for helm in peptides_list_helm:
         molecule = Chem.MolFromHELM(helm)
@@ -187,6 +191,9 @@ def get_features(sequence_list):
             bond_type.extend([bond.GetBondTypeAsDouble()])
             in_ring.extend([int(bond.IsInRing())])
             conjugated.extend([int(bond.GetIsConjugated())])
+            bond_aromatic.extend([int(bond.GetIsAromatic())])
+            valence_contribution_i.extend([int(bond.GetValenceContrib(bond.GetBeginAtom()))])
+            valence_contribution_f.extend([int(bond.GetValenceContrib(bond.GetEndAtom()))])
             
     #nodes
     atomic_set = list(set(atomic_number))
@@ -221,6 +228,18 @@ def get_features(sequence_list):
     conjugated_set = list(set(conjugated))
     codificador_conjugated= OneHotEncoder()
     codificador_conjugated.fit(np.array(conjugated_set).reshape(-1,1))
+    
+    aromatic_bond_set = list(set(bond_aromatic))
+    codificador_aromatic_bond = OneHotEncoder()
+    codificador_aromatic_bond.fit(np.array(aromatic_bond_set).reshape(-1,1))
+    
+    valence_contribution_i_set = list(set(valence_contribution_i))
+    codificador_valence_contribution_i = OneHotEncoder()
+    codificador_valence_contribution_i.fit(np.array(valence_contribution_i_set).reshape(-1,1))
+    
+    valence_contribution_f_set = list(set(valence_contribution_f))
+    codificador_valence_contribution_f = OneHotEncoder()
+    codificador_valence_contribution_f.fit(np.array(valence_contribution_f_set).reshape(-1,1))
 
     node_features_dict = defaultdict(list)
     edge_features_dict = defaultdict(list)
@@ -237,14 +256,17 @@ def get_features(sequence_list):
         feature_node = np.concatenate((atomic_feature, aromatic_feature, bonds_feature, hydrogen_feature, hybrid_feature))
         node_features_dict[node_key_features_combined] = feature_node
     
-    for bond, ring, conjugat in zip(bond_type, in_ring, conjugated):
-        edge_key_features_combined = f"{bond:.1f}_{ring:.1f}_{conjugat:.1f}" 
+    for bond, ring, conjugat, aroma, valence_i, valence_f in zip(bond_type, in_ring, conjugated, bond_aromatic, valence_contribution_i, valence_contribution_f):
+        edge_key_features_combined = f"{bond:.1f}_{ring:.1f}_{conjugat:.1f}_{aroma:.1f}_{valence_i:.1f}_{valence_f:.1f}" 
         
         bond_feature = codificador_bond_type.transform([[bond]]).toarray()[0]
         ring_feature = codificador_in_ring.transform([[ring]]).toarray()[0]
         conjugated_feature = codificador_conjugated.transform([[conjugat]]).toarray()[0] 
-            
-        feature_edge = np.concatenate((bond_feature, ring_feature, conjugated_feature))
+        aroma_feature = codificador_aromatic_bond.transform([[aroma]]).toarray()[0]
+        valence_feature_i = codificador_valence_contribution_i.transform([[valence_i]]).toarray()[0]
+        valence_feature_f = codificador_valence_contribution_f.transform([[valence_f]]).toarray()[0]
+        
+        feature_edge = np.concatenate((bond_feature, ring_feature, conjugated_feature, aroma_feature, valence_feature_i, valence_feature_f))
         edge_features_dict[edge_key_features_combined] = feature_edge
         
     
