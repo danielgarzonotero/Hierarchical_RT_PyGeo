@@ -28,7 +28,7 @@ print('Number of NODES features: ', dataset.num_features)
 print('Number of EDGES features: ', dataset.num_edge_features)
 
 finish_time_preprocessing = time.time()
-time_preprocessing = (finish_time_preprocessing - finish_time_preprocessing) / 60 #TODO
+time_preprocessing = (finish_time_preprocessing - start_time) / 60 #TODO
 
 
 # # Number of datapoints in the training set:
@@ -57,7 +57,7 @@ torch.manual_seed(0)
 initial_dim_gcn = dataset.num_features
 edge_dim_feature = dataset.num_edge_features
 
-hidden_dim_nn_1 = 500
+hidden_dim_nn_1 = 600
 p1 = 0
 hidden_dim_nn_2 = 250    
 p2 = 0
@@ -67,7 +67,7 @@ p3 = 0
 hidden_dim_gat_0 = 20
 hidden_dim_gat_1 = 0
 
-hidden_dim_fcn_1 = 100
+hidden_dim_fcn_1 = 90
 hidden_dim_fcn_2 = 50
 hidden_dim_fcn_3 = 10
 
