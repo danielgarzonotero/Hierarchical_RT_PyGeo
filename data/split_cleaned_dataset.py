@@ -6,7 +6,7 @@ import random
 df = pd.read_csv('LUNA_SILICA.csv' )
 
 total_rows = len(df)
-target_rows = 10000
+target_rows = 100
 
 if total_rows > target_rows:
     
@@ -17,8 +17,8 @@ if total_rows > target_rows:
 
     df = df.drop(rows_to_drop_indices)
 
-df.to_csv('/home/vvd9fd/Documents/Bilodeau Group/Codes/0.Research/Hierarchical_RT_PyGeo/data/LUNA_SILICA_10000.csv', index=False, quoting=None)
-df = pd.read_csv('/home/vvd9fd/Documents/Bilodeau Group/Codes/0.Research/Hierarchical_RT_PyGeo/data/LUNA_SILICA_10000.csv')
+df.to_csv('/home/vvd9fd/Documents/Bilodeau Group/Codes/0.Research/Hierarchical_RT_PyGeo/data/test.csv', index=False, quoting=None)
+df = pd.read_csv('/home/vvd9fd/Documents/Bilodeau Group/Codes/0.Research/Hierarchical_RT_PyGeo/data/test.csv')
 filas, columnas = df.shape
 print(f"El DataFrame shuffle tiene {filas} filas y {columnas} columnas.")
 
