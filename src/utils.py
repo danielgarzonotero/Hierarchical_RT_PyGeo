@@ -55,6 +55,7 @@ def sequences_geodata(cc, sequence, y, peptide_ft_dict, amino_ft_dict, node_ft_d
     aminoacids_features = torch.tensor(np.array([amino_ft_dict[amino] for amino in aminoacids]), dtype=torch.float32, device=device)
 
     #Peptide:
+    sequence= get_sequence(sequence)
     peptide_features = torch.tensor(np.array([peptide_ft_dict[sequence]]), dtype=torch.float32, device=device)
 
     geo_dp = Data(x=nodes_features,
@@ -92,7 +93,9 @@ def get_features(sequence_list):
     aminoacid_list = []
     
     for i, peptide in enumerate(sequence_list):
+        peptide = get_sequence(peptide)
         peptide_biopython = ProteinAnalysis(peptide)
+        
         #molecular weight
         wt_peptide = peptide_biopython.molecular_weight()
         #aromaticity
@@ -397,7 +400,6 @@ def split_sequence_for_Helm(peptide):
 #Gives the aminoacids given a peptide
 def get_aminoacids(sequence):
     aminoacids_list = []
-    
     for i, sequence in enumerate(sequence):
         aminoacids_list.extend(split_sequence_for_Helm(sequence))
     
@@ -410,3 +412,8 @@ def get_molecule(amino):
     molecule = Chem.MolFromHELM(helm_notation)
     
     return molecule 
+
+def get_sequence(peptide):
+    sequence = peptide.replace("(ac)", "[ac].").replace("_", "").replace("1", "").replace("2", "").replace("3", "").replace("4", "")
+    
+    return sequence

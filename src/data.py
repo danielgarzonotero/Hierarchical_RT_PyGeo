@@ -8,7 +8,7 @@ from src.utils import sequences_geodata, get_features
 from src.device import device_info
 
 class GeoDataset(InMemoryDataset):
-    def __init__(self, root='../data', raw_name='10000_unmod.csv', processed_name='rt_processed.pt', transform=None, pre_transform=None):
+    def __init__(self, root='../data', raw_name='dia.csv', processed_name='rt_processed.pt', transform=None, pre_transform=None):
         self.filename = os.path.join(root, raw_name) #TODO processed name
         
         self.df = pd.read_csv(self.filename)
@@ -44,7 +44,7 @@ class GeoDataset(InMemoryDataset):
 
             data_list.append(sequences_geodata(cc, x, y, peptide_ft_dic, amino_ft_dict, node_ft_dict, edge_ft_dict, device)[0])
             aminoacids_features_dict[cc] = sequences_geodata(cc, x, y, peptide_ft_dic, amino_ft_dict, node_ft_dict, edge_ft_dict, device)[1]
-            peptides_features_dict[cc] = sequences_geodata(cc, x, y, peptide_ft_dic, amino_ft_dict, node_ft_dict, edge_ft_dict, device)[2]
+            peptides_features_dict[cc]   = sequences_geodata(cc, x, y, peptide_ft_dic, amino_ft_dict, node_ft_dict, edge_ft_dict, device)[2]
             
             cc += 1
             
